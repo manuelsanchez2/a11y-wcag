@@ -1,0 +1,43 @@
+{
+  "name": "a11y-wcag",
+  "version": "0.0.1",
+  "description": "A list of cool useful a11y resources",
+  "keywords": [
+    "demo",
+    "typescript"
+  ],
+  "homepage": "https://github.com/manuelsanchez2/a11y-wcag",
+  "bugs": {
+    "url": "https://github.com/manuelsanchez2/a11y-wcag/issues"
+  },
+  "author": "Manuel Sanchez <manusansan22@gmail.com> (https://manuelsanchezdev.com)",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/manuelsanchez2/a11y-wcag.git"
+  },
+  "files": [
+    "dist"
+  ],
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "ci": "npm run build && npm run check-format && npm run check-exports && npm run test",
+    "format": "prettier --write .",
+    "check-format": "prettier --check .",
+    "check-exports": "attw --pack . --ignore-rules=cjs-resolves-to-esm",
+    "test": "vitest run",
+    "dev": "vitest",
+    "update-version": "npx changeset",
+    "local-release": "changeset version && changeset publish",
+    "prepublishOnly": "npm run ci"
+  },
+  "license": "MIT",
+  "type": "module",
+  "devDependencies": {
+    "@arethetypeswrong/cli": "^0.15.4",
+    "@changesets/cli": "^2.27.8",
+    "prettier": "^3.3.3",
+    "typescript": "^5.5.4",
+    "vitest": "^2.0.5"
+  }
+}
