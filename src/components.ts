@@ -2,17 +2,26 @@ import { wcagCriteria } from './wcagData.js';
 
 const sheetCards = new CSSStyleSheet();
 sheetCards.replaceSync(`
+  :host {
+    --card-width: 300px;
+    --card-height: 400px;
+    --font-size-small: 0.875rem;
+    --font-size-medium: 1rem;
+    --font-size-large: 2.5rem;
+    --padding: 16px;
+  }
+
   .wcag-card {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     border-radius: 12px;
     color: #fff;
-    padding: 16px;
-    font-family: 'Arial', sans-serif;
+    padding: var(--padding);
+    font-family: 'Helvetica', 'Arial', sans-serif;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    max-width: 300px;
-    min-height: 400px;
+    max-width: var(--card-width);
+    min-height: var(--card-height);
   }
 
   header {
@@ -28,11 +37,11 @@ sheetCards.replaceSync(`
   }
 
   .principle .icon {
-    font-size: 1.2rem;
+    font-size: calc(var(--font-size-medium) * 1.2);
   }
 
   .principle-text {
-    font-size: 1rem;
+    font-size: var(--font-size-medium);
     font-weight: bold;
   }
 
@@ -42,28 +51,23 @@ sheetCards.replaceSync(`
     border-radius: 10%;
     padding: 4px 8px;
     font-weight: bold;
-    font-size: 1rem;
-  }
-
-  .content {
-    margin-top: 1.5rem;
-    margin-bottom: auto;
+    font-size: var(--font-size-medium);
   }
 
   .content h2 {
-    font-size: 2.5rem;
+    font-size: var(--font-size-large);
     font-weight: bold;
     margin: 0;
   }
 
   .content h3 {
-    font-size: 1.3rem;
+    font-size: var(--font-size-medium);
     font-weight: bold;
     margin-top: 0.5rem;
   }
 
   .content p {
-    font-size: 0.875rem;
+    font-size: var(--font-size-small);
     margin-top: 0.5rem;
   }
 
@@ -75,7 +79,7 @@ sheetCards.replaceSync(`
   }
 
   .criteria-link {
-    font-size: 0.875rem;
+    font-size: var(--font-size-small);
   }
 
   .criteria-link a {
@@ -86,16 +90,18 @@ sheetCards.replaceSync(`
   .criteria-link a:hover {
     color: #ccc;
   }
-
 `);
 
 class WcagCard extends HTMLElement {
   private criterion: string;
+  private size: 'small' | 'medium' | 'large';
 
   constructor() {
     super();
     const shadow = this.attachShadow({ mode: 'open' });
     this.criterion = this.getAttribute('criterion') || '';
+    this.size =
+      (this.getAttribute('size') as 'small' | 'medium' | 'large') || 'medium';
 
     const data = wcagCriteria[this.criterion];
     if (!data) {
@@ -104,8 +110,10 @@ class WcagCard extends HTMLElement {
     }
 
     shadow.adoptedStyleSheets = [sheetCards];
+    this.applySizeStyles(); // Apply size styles based on the size attribute
 
     const container = document.createElement('article');
+    container.ariaLabel = `WCAG Criterion ${this.criterion}`;
     container.classList.add('wcag-card');
     container.style.backgroundColor = data.background;
 
@@ -142,6 +150,23 @@ class WcagCard extends HTMLElement {
       this.criterion = newValue;
       this.render();
     }
+
+    if (name === 'size' && oldValue !== newValue) {
+      this.size = newValue as 'small' | 'medium' | 'large';
+      this.applySizeStyles();
+    }
+  }
+
+  applySizeStyles() {
+    const scaleFactor =
+      this.size === 'small' ? 0.8 : this.size === 'large' ? 1.2 : 1;
+
+    this.style.setProperty('--card-width', `${300 * scaleFactor}px`);
+    this.style.setProperty('--card-height', `${400 * scaleFactor}px`);
+    this.style.setProperty('--font-size-small', `${0.875 * scaleFactor}rem`);
+    this.style.setProperty('--font-size-medium', `${1 * scaleFactor}rem`);
+    this.style.setProperty('--font-size-large', `${2.5 * scaleFactor}rem`);
+    this.style.setProperty('--padding', `${16 * scaleFactor}px`);
   }
 
   render() {
@@ -151,16 +176,28 @@ class WcagCard extends HTMLElement {
       return;
     }
 
-    const container = this.shadowRoot!.querySelector('article')!;
-    container.style.backgroundColor = data.background;
-    container.querySelector('h2')!.textContent = this.criterion;
-    container.querySelector('h3')!.textContent = data.title;
-    container.querySelector('p')!.textContent = data.description;
-    container.querySelector('.principle-text')!.textContent = data.principle;
-    container.querySelector('.level')!.textContent = data.level;
-    container.querySelector('a')!.textContent = data.link;
-    container.querySelector('a')!.href = data.link;
-    container.querySelector('button')!.textContent = data.title;
+    const container = this.shadowRoot!.querySelector('article');
+    if (container) {
+      container.style.backgroundColor = data.background;
+
+      const h2 = container.querySelector('h2');
+      const h3 = container.querySelector('h3');
+      const p = container.querySelector('p');
+      const principleText = container.querySelector('.principle-text');
+      const level = container.querySelector('.level');
+      const link = container.querySelector('a');
+
+      // Check if elements exist before setting their textContent or attributes
+      if (h2) h2.textContent = this.criterion;
+      if (h3) h3.textContent = data.title;
+      if (p) p.textContent = data.description;
+      if (principleText) principleText.textContent = data.principle;
+      if (level) level.textContent = data.level;
+      if (link) {
+        link.textContent = data.link;
+        link.href = data.link;
+      }
+    }
   }
 }
 

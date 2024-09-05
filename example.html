@@ -4,16 +4,17 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Example Document with WCAG Resources</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <script type="module" src="dist/index.js"></script>
   </head>
   <body>
-
     <div style="display: flex; flex-wrap: wrap; gap: 1rem; margin-block: 2rem">
-      <wcag-card criterion="1.1.1"></wcag-card>
-      <wcag-card criterion="1.2.1"></wcag-card>
-      <wcag-card criterion="2.1.1"></wcag-card>
-      <wcag-card criterion="2.1.3"></wcag-card>
+      <div class="grid grid-cols-4 gap-3 m-24">
+        <wcag-card size="small" criterion="1.1.1"></wcag-card>
+        <wcag-card size="small" criterion="3.1.1"></wcag-card>
+        <wcag-card size="small" criterion="2.1.1"></wcag-card>
+        <wcag-card size="small" criterion="4.1.2"></wcag-card>
+      </div>
     </div>
-
   </body>
 </html>
