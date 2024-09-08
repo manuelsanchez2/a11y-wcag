@@ -1,5 +1,11 @@
 # a11y-wcag
 
+## 0.2.1
+
+### Patch Changes
+
+- fbab8b2: improve styling of the cards and add icons
+
 ## 0.2.0
 
 ### Minor Changes
