@@ -1,13 +1,14 @@
 import { wcagCriteria } from './wcagData.js';
+import { QRCode } from './qrcode.js';
 
 const sheetCards = new CSSStyleSheet();
 sheetCards.replaceSync(`
   :host {
     --card-width: 300px;
     --card-height: 400px;
-    --font-size-small: 0.875rem;
-    --font-size-medium: 1rem;
-    --font-size-large: 2.5rem;
+    --font-size-small: 0.825rem;
+    --font-size-medium: 0.9rem;
+    --font-size-large: 2.3rem;
     --padding: 16px;
   }
 
@@ -70,6 +71,15 @@ sheetCards.replaceSync(`
     padding-left: var(--padding);
   }
 
+  .qr-code {
+    margin-right: var(--padding);
+    margin-left: calc(var(--font-size-medium) * 1.4);
+    width: calc(var(--font-size-medium) * 5) !important;
+    height: calc(var(--font-size-medium) * 5) !important;
+    max-width: 80px;
+    max-height: 80px;
+  }
+
   .content .content-criterion {
     font-size: var(--font-size-large);
     font-weight: bold;
@@ -90,14 +100,14 @@ sheetCards.replaceSync(`
     text-shadow: 2px 3px 10px rgba(0, 0, 0, .47843137254901963);
   }
 
-  footer {
+  .footer {
     display: flex;
+    width: 100%;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-end;
     margin-top: 1rem;
-    padding-left: var(--padding);
-    text-shadow: 2px 3px 10px rgba(0, 0, 0, .47843137254901963);
-
+    gap: 1rem;
+    padding: 0 var(--padding);
   }
 
   .criteria-link {
@@ -174,6 +184,18 @@ class WcagCard extends HTMLElement {
     container.classList.add('wcag-card');
     container.style.backgroundColor = data.background;
 
+    const qrCodeCanvas = document.createElement('canvas');
+    qrCodeCanvas.classList.add('qr-code');
+
+    // @ts-ignore
+    QRCode.toCanvas(qrCodeCanvas, data.link, function (error) {
+      if (error) {
+        console.error(error);
+      } else {
+        console.log('QR code generated successfully');
+      }
+    });
+
     const getDarkerColor = (color: string) => {
       switch (color) {
         case '#535035':
@@ -205,13 +227,18 @@ class WcagCard extends HTMLElement {
         <div class="content-title">${dataOfLanguage.title}</div>
         <p>${dataOfLanguage.description}</p>
       </div>
-      <footer>
+      <footer class="footer">
         <div class="criteria-link">
           <strong>Success Criterion:</strong>
           <a style="text-wrap: wrap; hyphens: auto; word-break: break-word;" href="${data.link}" rel="nofollow noopener" target="_blank">${data.link}</a>
         </div>
       </footer>
     `;
+
+    const footerDiv = container.querySelector('.footer');
+    if (footerDiv) {
+      footerDiv.appendChild(qrCodeCanvas);
+    }
 
     shadow.appendChild(container);
   }
