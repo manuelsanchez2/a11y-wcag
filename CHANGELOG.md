@@ -1,5 +1,11 @@
 # a11y-wcag
 
+## 0.4.0
+
+### Minor Changes
+
+- f666e68: add qr code
+
 ## 0.3.0
 
 ### Minor Changes
