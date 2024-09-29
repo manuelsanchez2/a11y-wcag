@@ -1,5 +1,11 @@
 # a11y-wcag
 
+## 0.3.0
+
+### Minor Changes
+
+- 6c68045: add protogerman version and default case of criterion
+
 ## 0.2.1
 
 ### Patch Changes
